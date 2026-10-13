@@ -1,0 +1,12 @@
+{
+  "name": "atlas-admin",
+  "version": "1.0.0",
+  "description": "Microservicio administrador de colas, exchanges y bindings - Sistema de Gestion Atlas",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

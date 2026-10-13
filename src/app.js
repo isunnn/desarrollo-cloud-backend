@@ -7,6 +7,7 @@ const swaggerUi = require("swagger-ui-express");
 
 const { pool } = require("./db");
 const { authOptional } = require("./middleware/validateEntra");
+const rabbit = require("./rabbit");
 
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
@@ -64,4 +65,5 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Atlas API escuchando en puerto ${PORT}`);
+  rabbit.connect();
 });

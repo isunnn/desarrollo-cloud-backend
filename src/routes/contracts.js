@@ -4,6 +4,7 @@ const express = require("express");
 const multer = require("multer");
 const { pool } = require("../db");
 const { getAuthUser } = require("../middleware/validateEntra");
+const { publishEvent } = require("../rabbit");
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.post("/", upload.single("file"), async (req, res) => {
     descripcion = null,
     fecha_inicio,
     fecha_fin,
+    forceFail = false,
   } = req.body;
   try {
     const clientIdNum = Number(cliente_id);
@@ -46,7 +48,19 @@ router.post("/", upload.single("file"), async (req, res) => {
       ]
     );
 
-    res.status(201).json(result.rows[0]);
+    // RabbitMQ: publica el evento contract.created en los dos exchanges.
+    // forceFail=true marca el mensaje para que el consumidor lo rechace (-> DLQ).
+    const contract = result.rows[0];
+    const eventPayload = {
+      event: "contract.created",
+      forceFail: forceFail === true || forceFail === "true",
+      contract,
+      publishedAt: new Date().toISOString(),
+    };
+    await publishEvent("ex.notifications", "created", eventPayload);
+    await publishEvent("ex.contracts", "contract.created", eventPayload);
+
+    res.status(201).json(contract);
   } catch (err) {
     console.error(err);
     res.status(500).json({

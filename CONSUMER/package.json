@@ -1,0 +1,12 @@
+{
+  "name": "atlas-consumer",
+  "version": "1.0.0",
+  "description": "Microservicio consumidor de mensajes RabbitMQ - Sistema de Gestion Atlas",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "amqplib": "^2.2.0"
+  }
+}
