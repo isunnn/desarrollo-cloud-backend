@@ -136,6 +136,21 @@ services:
       - atlas-network
     restart: unless-stopped
 
+  atlas-kafka-admin:
+    build:
+      context: ./KADMIN
+      dockerfile: Dockerfile
+    container_name: atlas-kafka-admin
+    hostname: atlas-kafka-admin
+    environment:
+      - PORT=4500
+      - KAFKA_BROKERS=${KAFKA_BROKERS:-kafka-broker1:9092,kafka-broker2:9092,kafka-broker3:9092}
+    ports:
+      - "${PORT_KAFKA_ADMIN:-4501}:4500"
+    networks:
+      - atlas-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   rabbitmq_node1_data:
