@@ -5,6 +5,8 @@ const multer = require("multer");
 const { pool } = require("../db");
 const { getAuthUser } = require("../middleware/validateEntra");
 const { publishEvent } = require("../rabbit");
+const { publishEvent: publishKafka } = require("../kafka");
+const { ContractCreatedEvent } = require("../dtos/contractCreatedEvent");
 
 const router = express.Router();
 
@@ -59,6 +61,13 @@ router.post("/", upload.single("file"), async (req, res) => {
     };
     await publishEvent("ex.notifications", "created", eventPayload);
     await publishEvent("ex.contracts", "contract.created", eventPayload);
+
+    const kafkaEvent = ContractCreatedEvent.fromContract(contract, eventPayload.forceFail);
+    await Promise.allSettled([
+      publishKafka("atlas.notifications", kafkaEvent),
+      publishKafka("atlas.tickets", kafkaEvent),
+      publishKafka("atlas.documents", kafkaEvent),
+    ]);
 
     res.status(201).json(contract);
   } catch (err) {

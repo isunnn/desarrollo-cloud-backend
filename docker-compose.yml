@@ -38,6 +38,9 @@ services:
       - ENTRA_ISSUER=${ENTRA_ISSUER:-}
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3350,http://localhost:5173}
       - RABBITMQ_URL=amqp://${RABBITMQ_USER:-atlas}:${RABBITMQ_PASS:-atlas123}@rabbitmq-node1:5672
+      - KAFKA_BROKERS=${KAFKA_BROKERS:-kafka-broker1:9092,kafka-broker2:9092,kafka-broker3:9092}
+      - KAFKA_CLIENT_ID=${KAFKA_CLIENT_ID_API:-atlas-api}
+      - KAFKAJS_NO_PARTITIONER_WARNING=1
     ports:
       - "${PORT_BACKEND:-4450}:4000"
     depends_on:
@@ -107,6 +110,11 @@ services:
     environment:
       - RABBITMQ_URL=amqp://${RABBITMQ_USER:-atlas}:${RABBITMQ_PASS:-atlas123}@rabbitmq-node1:5672
       - LOG_DIR=/app/logs
+      - KAFKA_BROKERS=${KAFKA_BROKERS:-kafka-broker1:9092,kafka-broker2:9092,kafka-broker3:9092}
+      - KAFKA_CLIENT_ID=${KAFKA_CLIENT_ID_CONSUMER:-atlas-consumer}
+      - KAFKA_FROM_BEGINNING=${KAFKA_FROM_BEGINNING:-false}
+      - KAFKA_RETRY_MS=${KAFKA_RETRY_MS:-5000}
+      - KAFKAJS_NO_PARTITIONER_WARNING=1
     volumes:
       - ./CONSUMER/logs:/app/logs
     depends_on:
