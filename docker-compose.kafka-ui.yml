@@ -1,0 +1,22 @@
+# EP4 - Kafka-ui: administracion de brokers y topicos
+# Se levanta despues de docker-compose.kafka.yml (usa la red externa atlas-network)
+name: atlas-kafka-ui
+services:
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    environment:
+      KAFKA_CLUSTERS_0_NAME: atlas
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker1:9092,kafka-broker2:9092,kafka-broker3:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      JAVA_OPTS: "-Xmx256m"
+    ports:
+      - "8080:8080"
+    networks:
+      - atlas-network
+    restart: unless-stopped
+
+networks:
+  atlas-network:
+    external: true
+    name: atlas-network
